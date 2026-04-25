@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Payment Processing…</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+</head>
+<body>
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const trackingId = params.get('OrderTrackingId');
+  const merchantRef = params.get('OrderMerchantReference');
+  if (trackingId && merchantRef) {
+    await fetch('https://vhuiukwundycdmksbnvi.supabase.co/functions/v1/pesapal-ipn?OrderTrackingId=' + trackingId + '&OrderMerchantReference=' + merchantRef);
+  }
+  window.location.href = 'dashboard.html';
+});
+</script>
+</body>
+</html>

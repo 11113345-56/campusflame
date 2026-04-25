@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Complete Your Profile</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--dark); }
+.bg-glow { position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(255,77,77,0.1) 0%, transparent 60%); pointer-events: none; }
+.cp-wrap { width: 100%; max-width: 520px; position: relative; z-index: 1; }
+.cp-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.cp-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.cp-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 28px; padding: 36px; box-shadow: var(--shadow); animation: fadeUp 0.5s ease both; }
+.cp-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+.cp-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+
+/* Progress steps */
+.progress-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
+.prog-step { display: flex; align-items: center; gap: 8px; flex: 1; }
+.prog-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; transition: var(--tr); }
+.prog-circle.done { background: var(--flame); border-color: var(--flame); color: #fff; }
+.prog-circle.active { border-color: var(--flame); color: var(--flame); }
+.prog-line { flex: 1; height: 2px; background: var(--border); border-radius: 1px; }
+.prog-line.done { background: var(--flame); }
+
+/* Avatar upload */
+.avatar-upload-center { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 28px; }
+.avatar-big { width: 110px; height: 110px; border-radius: 50%; background: var(--surface); border: 3px dashed var(--flame); display: flex; align-items: center; justify-content: center; font-size: 44px; cursor: pointer; overflow: hidden; transition: var(--tr); position: relative; }
+.avatar-big:hover { border-color: var(--flame2); box-shadow: var(--glow); }
+.avatar-big img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-upload-note { font-size: 13px; color: var(--text-dim); text-align: center; }
+.avatar-upload-note span { color: var(--flame); font-weight: 600; cursor: pointer; }
+
+/* Interests chips */
+.interests-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.interest-chip {
+  padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--border2); cursor: pointer; transition: var(--tr);
+  background: var(--surface); color: var(--text-dim); user-select: none;
+}
+.interest-chip:hover { border-color: var(--flame); color: var(--flame); }
+.interest-chip.selected { background: rgba(255,77,77,0.12); border-color: var(--flame); color: var(--flame); }
+
+/* Relationship type */
+.rel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.rel-option {
+  padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border2);
+  cursor: pointer; transition: var(--tr); background: var(--surface);
+  text-align: center; font-size: 13px; font-weight: 600; color: var(--text-dim);
+}
+.rel-option:hover { border-color: var(--flame); color: var(--flame); }
+.rel-option.selected { background: rgba(255,77,77,0.1); border-color: var(--flame); color: var(--flame); }
+.rel-option .rel-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
+/* Step panels */
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+.btn-next { width: 100%; padding: 16px; font-size: 16px; margin-top: 20px; }
+.btn-prev { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; margin-top: 12px; display: block; width: 100%; text-align: center; }
+.btn-prev:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="cp-wrap">
+  <div class="cp-logo">
+    <div class="cp-logo-icon">🔥</div>
+    <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900" class="grad-text">CampusFlame</span>
+  </div>
+  <div class="cp-card">
+    <div class="cp-title">Complete Your Profile</div>
+    <div class="cp-sub">Help others know who you are. This takes less than 2 minutes.</div>
+
+    <!-- Progress -->
+    <div class="progress-steps">
+      <div class="prog-step"><div class="prog-circle active" id="pc1">1</div></div>
+      <div class="prog-line" id="pl1"></div>
+      <div class="prog-step"><div class="prog-circle" id="pc2">2</div></div>
+      <div class="prog-line" id="pl2"></div>
+      <div class="prog-step"><div class="prog-circle" id="pc3">3</div></div>
+      <div class="prog-line" id="pl3"></div>
+      <div class="prog-step"><div class="prog-circle" id="pc4">4</div></div>
+    </div>
+
+    <!-- STEP 1: Photo -->
+    <div class="step-panel active" id="step-1">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px">Add your photo 📸</div>
+      <div style="color:var(--text-dim);font-size:14px;margin-bottom:24px">Your profile photo helps others recognise you. You can also skip and use an avatar.</div>
+      <div class="avatar-upload-center">
+        <div class="avatar-big" id="avatar-preview" onclick="document.getElementById('avatar-file').click()">😊</div>
+        <div class="avatar-upload-note">
+          <span onclick="document.getElementById('avatar-file').click()">Tap to upload your photo</span><br>
+          or use the emoji above as your avatar
+        </div>
+        <input type="file" id="avatar-file" accept="image/*" onchange="previewAvatarStep(this)">
+      </div>
+      <button class="btn btn-flame btn-next" onclick="goStep(2)">Continue →</button>
+    </div>
+
+    <!-- STEP 2: Bio & Interests -->
+    <div class="step-panel" id="step-2">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px">About You ✨</div>
+      <div style="color:var(--text-dim);font-size:14px;margin-bottom:24px">Write a short bio and pick your interests.</div>
+      <div class="form-group">
+        <label class="form-label">Short Bio</label>
+        <textarea class="form-input" id="cp-bio" rows="3" placeholder="e.g. 3rd year law student at Mak. I love music, hiking and good food 😄" style="resize:none"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Interests (pick at least 3)</label>
+        <div class="interests-grid" id="interests-grid"></div>
+      </div>
+      <button class="btn btn-flame btn-next" onclick="goStep(3)">Continue →</button>
+      <button class="btn-prev" onclick="goStep(1)">← Back</button>
+    </div>
+
+    <!-- STEP 3: Looking For -->
+    <div class="step-panel" id="step-3">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px">What are you looking for? 💭</div>
+      <div style="color:var(--text-dim);font-size:14px;margin-bottom:24px">Be honest — it helps find the right match for you.</div>
+      <div class="form-group">
+        <label class="form-label">Interested In</label>
+        <select class="form-input" id="cp-looking-for">
+          <option value="">Select preference</option>
+          <option value="male">Men</option>
+          <option value="female">Women</option>
+          <option value="trans">Trans</option>
+          <option value="everyone">Everyone</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:20px">
+        <label class="form-label">Relationship Type</label>
+        <div class="rel-grid" id="rel-grid">
+          <div class="rel-option" data-val="long_term"><span class="rel-icon">💍</span>Long Term</div>
+          <div class="rel-option" data-val="short_term"><span class="rel-icon">🌸</span>Short Term</div>
+          <div class="rel-option" data-val="hookup"><span class="rel-icon">🔥</span>Hookup</div>
+          <div class="rel-option" data-val="one_night"><span class="rel-icon">🌙</span>One Night Stand</div>
+          <div class="rel-option" data-val="fwb"><span class="rel-icon">😉</span>Friends w/ Benefits</div>
+          <div class="rel-option" data-val="friends"><span class="rel-icon">🤝</span>Just Friends</div>
+          <div class="rel-option" data-val="online"><span class="rel-icon">💻</span>Online Friend</div>
+        </div>
+      </div>
+      <button class="btn btn-flame btn-next" onclick="goStep(4)">Continue →</button>
+      <button class="btn-prev" onclick="goStep(2)">← Back</button>
+    </div>
+
+    <!-- STEP 4: Done -->
+    <div class="step-panel" id="step-4">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:64px;margin-bottom:20px">🔥</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:12px">Profile Complete!</div>
+        <div style="color:var(--text-dim);font-size:15px;line-height:1.7;margin-bottom:32px">You are all set! Start exploring campus matches near you.</div>
+        <button class="btn btn-flame" style="font-size:16px;padding:16px 36px" id="finish-btn" onclick="saveProfile()">Find My Matches 🔥</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>
+const INTERESTS = ['Music 🎵','Movies 🎬','Sports ⚽','Reading 📚','Gaming 🎮','Cooking 🍳','Travel ✈️','Art 🎨','Dancing 💃','Fashion 👗','Gym 💪','Photography 📷','Tech 💻','Nature 🌿','Food 🍕','Anime 🎌','Poetry ✍️','Business 💼','Politics 🗳️','Worship 🙏'];
+let selectedInterests = [];
+let selectedRelType = null;
+let avatarFile = null;
+let currentStep = 1;
+
+// Build interests
+const ig = document.getElementById('interests-grid');
+INTERESTS.forEach(i => {
+  const chip = document.createElement('div');
+  chip.className = 'interest-chip';
+  chip.textContent = i;
+  chip.onclick = () => {
+    chip.classList.toggle('selected');
+    if (chip.classList.contains('selected')) selectedInterests.push(i);
+    else selectedInterests = selectedInterests.filter(x => x !== i);
+  };
+  ig.appendChild(chip);
+});
+
+// Relationship type selection
+document.querySelectorAll('.rel-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.rel-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedRelType = opt.dataset.val;
+  });
+});
+
+function goStep(n) {
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-' + n).classList.add('active');
+  // Update progress
+  for (let i = 1; i <= 4; i++) {
+    const circle = document.getElementById('pc' + i);
+    if (i < n) { circle.className = 'prog-circle done'; circle.textContent = '✓'; }
+    else if (i === n) { circle.className = 'prog-circle active'; circle.textContent = i; }
+    else { circle.className = 'prog-circle'; circle.textContent = i; }
+    if (i < 4) { const line = document.getElementById('pl' + i); if (line) line.className = 'prog-line' + (i < n ? ' done' : ''); }
+  }
+}
+
+function previewAvatarStep(input) {
+  const file = input.files[0]; if (!file) return;
+  avatarFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const el = document.getElementById('avatar-preview');
+    el.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile() {
+  setLoading('finish-btn', true, 'Saving…');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+  const uid = session.user.id;
+
+  let avatar_url = null;
+  if (avatarFile) {
+    try { avatar_url = await uploadFile('avatars', `users/${uid}`, avatarFile); } catch(e) {}
+  }
+
+  await sb.from('profiles').update({
+    avatar_url,
+    bio: document.getElementById('cp-bio').value.trim() || null,
+    interests: selectedInterests.join(', ') || null,
+    looking_for: document.getElementById('cp-looking-for').value || null,
+    relationship_type: selectedRelType || null,
+    profile_complete: true
+  }).eq('id', uid);
+
+  setLoading('finish-btn', false, 'Find My Matches 🔥');
+  showToast('Profile saved! 🔥', 'success');
+  setTimeout(() => window.location.href = 'dashboard.html', 1200);
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const user = await requireAuth('login.html');
+  if (!user) return;
+});
+</script>
+</body>
+</html>

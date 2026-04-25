@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Love Doctor</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+.ld-layout { display: flex; flex-direction: column; height: calc(100vh - 69px); }
+.ld-intro { background: linear-gradient(135deg, rgba(255,77,77,0.08), rgba(255,140,66,0.05)); border: 1px solid rgba(255,77,77,0.15); border-radius: 20px; padding: 20px 24px; margin: 20px 20px 0; display: flex; align-items: center; gap: 16px; }
+.ld-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.ld-info h3 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.ld-info p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+.ld-online { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #4ade80; margin-top: 4px; }
+.ld-online::before { content: ''; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; display: inline-block; }
+
+/* PREMIUM NOTICE */
+.ld-premium-notice {
+  margin: 12px 20px 0;
+  background: linear-gradient(135deg, rgba(255,140,66,0.1), rgba(255,209,102,0.06));
+  border: 1px solid rgba(255,209,102,0.25);
+  border-radius: 14px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--flame2);
+}
+.ld-premium-notice.hidden { display: none; }
+
+.ld-chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.ld-input-area { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--dark2); }
+.ld-input-row { display: flex; gap: 10px; align-items: center; }
+.ld-input { flex: 1; padding: 14px 18px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; color: var(--text); font-size: 14px; outline: none; transition: var(--tr); }
+.ld-input:focus { border-color: var(--flame); }
+.ld-input::placeholder { color: var(--text-dim); }
+.ld-send { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: var(--tr); flex-shrink: 0; }
+.ld-send:hover { box-shadow: 0 6px 20px rgba(255,77,77,0.4); transform: scale(1.05); }
+
+/* Doctor reply bubble style */
+.bubble.doctor { background: linear-gradient(135deg, rgba(255,77,77,0.12), rgba(255,140,66,0.08)); border: 1px solid rgba(255,77,77,0.2); color: var(--text); }
+
+/* Suggested questions */
+.suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.suggestion-chip { padding: 8px 14px; background: var(--surface); border: 1px solid var(--border2); border-radius: 50px; font-size: 12px; color: var(--text-dim); cursor: pointer; transition: var(--tr); }
+.suggestion-chip:hover { border-color: var(--flame); color: var(--flame); background: rgba(255,77,77,0.06); }
+
+.msg-time { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+.msg-row.mine { align-items: flex-end; }
+.msg-row { display: flex; flex-direction: column; }
+.msg-row.theirs { align-items: flex-start; }
+
+/* Premium badge in chat */
+.premium-tag-inline {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, rgba(255,140,66,0.15), rgba(255,209,102,0.1));
+  border: 1px solid rgba(255,209,102,0.3);
+  color: var(--flame2); font-size: 10px; font-weight: 800;
+  padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+  vertical-align: middle; letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🔥</div>
+      <span class="sidebar-logo-text grad-text">CampusFlame</span>
+    </div>
+    <button class="nav-item" onclick="location.href='dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
+    <button class="nav-item" onclick="location.href='chats.html'"><span class="nav-icon">💬</span><span>Chats</span></button>
+    <button class="nav-item active"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
+    <button class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <div class="sidebar-bottom">
+      <button class="nav-item danger" onclick="logout()"><span class="nav-icon">🚪</span><span>Log Out</span></button>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-content" style="overflow:hidden">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title grad-text">Love Doctor ❤️‍🩹</span>
+      </div>
+      <!-- Show premium badge in topbar for premium users -->
+      <span id="ld-topbar-badge"></span>
+    </div>
+
+    <div class="ld-layout">
+      <!-- Intro card -->
+      <div class="ld-intro">
+        <div class="ld-avatar">👨‍⚕️</div>
+        <div class="ld-info">
+          <h3>Dr. Flame — Love Doctor</h3>
+          <p>Having relationship issues? Confused about your feelings? I am here to help. Share what is on your heart.</p>
+          <div class="ld-online">Available now</div>
+        </div>
+      </div>
+
+      <!-- Premium priority notice — shown only to premium users -->
+      <div class="ld-premium-notice hidden" id="ld-premium-notice">
+        ⭐ <strong>Premium Member</strong> — Your messages are prioritised. The Love Doctor attends to you first!
+      </div>
+
+      <!-- CHAT -->
+      <div class="ld-chat" id="ld-chat">
+        <div id="suggestions-wrap">
+          <div style="text-align:center;color:var(--text-dim);font-size:14px;margin-bottom:16px">Tap a question below or type your own:</div>
+          <div class="suggestions">
+            <div class="suggestion-chip" onclick="askSuggestion(this)">My partner is ignoring me 💔</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">How do I confess my feelings?</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">We keep fighting over small things</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">Is long distance possible?</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">I like someone but they have a partner</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">How do I move on after a breakup?</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">Should I give them a second chance?</div>
+            <div class="suggestion-chip" onclick="askSuggestion(this)">I feel like they are losing interest</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="ld-input-area">
+        <div class="ld-input-row">
+          <input class="ld-input" id="ld-input" placeholder="Share what is on your heart…" onkeydown="if(event.key==='Enter')sendLdMessage()">
+          <button class="ld-send" onclick="sendLdMessage()">➤</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:8px" id="ld-footer-note">
+          Your messages are private. The Love Doctor typically replies within a few hours.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>
+let myProfile = null;
+let ldSub = null;
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const user = await requireAuth('login.html');
+  if (!user) return;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (!profile) return;
+  myProfile = profile;
+
+  // Show premium UI elements if user is premium
+  if (isPremium(profile)) {
+    // Show premium badge in topbar
+    document.getElementById('ld-topbar-badge').innerHTML =
+      '<span class="premium-badge" style="font-size:12px">⭐ Premium</span>';
+
+    // Show priority notice
+    document.getElementById('ld-premium-notice').classList.remove('hidden');
+
+    // Update footer note
+    document.getElementById('ld-footer-note').innerHTML =
+      '<span style="color:var(--flame2)">⭐ Premium member — your messages are attended to first by the Love Doctor.</span>';
+  }
+
+  loadLdMessages();
+
+  // Subscribe to new replies
+  ldSub = sb.channel('ld-' + user.id)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'love_doctor_messages', filter: `user_id=eq.${user.id}` }, loadLdMessages)
+    .subscribe();
+});
+
+async function loadLdMessages() {
+  const { data: msgs } = await sb.from('love_doctor_messages')
+    .select('*')
+    .eq('user_id', myProfile.id)
+    .order('created_at', { ascending: true });
+
+  const chat = document.getElementById('ld-chat');
+  const sugWrap = document.getElementById('suggestions-wrap');
+
+  if (!msgs?.length) {
+    if (sugWrap) sugWrap.style.display = '';
+    return;
+  }
+
+  if (sugWrap) sugWrap.style.display = 'none';
+
+  const userPremium = isPremium(myProfile);
+
+  chat.innerHTML = msgs.map(m => {
+    const isMine = m.sender === 'user';
+    // Show premium tag on user's own messages so Love Doctor can see it
+    const premiumTag = isMine && userPremium
+      ? '<span class="premium-tag-inline">⭐ PREMIUM</span>'
+      : '';
+    return `<div class="msg-row ${isMine ? 'mine' : 'theirs'}">
+      <div class="bubble ${isMine ? 'mine' : 'doctor'}">
+        ${m.message}${isMine ? premiumTag : ''}
+      </div>
+      <div class="msg-time">${fmtDate(m.created_at)}</div>
+    </div>`;
+  }).join('');
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function askSuggestion(el) {
+  document.getElementById('ld-input').value = el.textContent;
+  sendLdMessage();
+}
+
+async function sendLdMessage() {
+  const input = document.getElementById('ld-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const sugWrap = document.getElementById('suggestions-wrap');
+  if (sugWrap) sugWrap.style.display = 'none';
+
+  const { error } = await sb.from('love_doctor_messages').insert({
+    user_id: myProfile.id,
+    user_name: myProfile.name || 'User',
+    message: msg,
+    sender: 'user',
+    is_priority: isPremium(myProfile), // store premium status with message
+    read_by_admin: false,
+    created_at: new Date().toISOString()
+  });
+
+  if (error) {
+    showToast('Failed to send: ' + error.message, 'error');
+    console.error('LD insert error:', error);
+    return;
+  }
+
+  showToast('Message sent to Love Doctor 💌', 'success');
+  loadLdMessages();
+}
+
+async function logout() { await sb.auth.signOut(); window.location.href = '/index.html'; }
+</script>
+</body>
+</html>

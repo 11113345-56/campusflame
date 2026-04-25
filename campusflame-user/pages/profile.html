@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — My Profile</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+.profile-hero { background: linear-gradient(135deg, rgba(255,77,77,0.1), rgba(255,140,66,0.06)); border: 1px solid var(--border); border-radius: 24px; padding: 32px; display: flex; align-items: flex-start; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+
+/* Premium hero gets golden glow */
+.profile-hero.is-premium {
+  background: linear-gradient(135deg, rgba(255,140,66,0.1), rgba(255,209,102,0.07));
+  border-color: rgba(255,209,102,0.35);
+  box-shadow: 0 0 30px rgba(255,209,102,0.1);
+}
+
+.profile-big-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; color: #fff; overflow: hidden; flex-shrink: 0; border: 3px solid rgba(255,77,77,0.4); cursor: pointer; position: relative; }
+.profile-big-avatar.is-premium { border-color: var(--flame3); box-shadow: 0 0 0 3px rgba(255,209,102,0.25); }
+.profile-big-avatar:hover::after { content: '📷'; position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; font-size: 28px; border-radius: 50%; }
+.profile-big-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-info { flex: 1; }
+.profile-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.profile-premium-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, rgba(255,140,66,0.2), rgba(255,209,102,0.15));
+  border: 1px solid rgba(255,209,102,0.4);
+  color: var(--flame2); font-size: 12px; font-weight: 800;
+  padding: 4px 12px; border-radius: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.04em;
+}
+.profile-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.profile-meta span { font-size: 13px; color: var(--text-dim); }
+.profile-bio { font-size: 14px; line-height: 1.7; color: var(--text-dim); margin-bottom: 12px; }
+.profile-interests { display: flex; flex-wrap: wrap; gap: 8px; }
+.interest-tag { padding: 5px 12px; background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.2); border-radius: 50px; font-size: 12px; color: var(--flame); }
+
+/* SECTIONS */
+.section-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+.section-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+.field-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.field-row:last-child { border-bottom: none; }
+.field-label { font-size: 13px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.field-value { font-size: 14px; font-weight: 500; }
+.edit-btn { padding: 7px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 50px; color: var(--text-dim); cursor: pointer; font-size: 12px; font-weight: 600; transition: var(--tr); }
+.edit-btn:hover { border-color: var(--flame); color: var(--flame); }
+
+/* PREMIUM CARD */
+.premium-card { background: linear-gradient(135deg, rgba(255,140,66,0.1), rgba(255,209,102,0.06)); border: 1px solid rgba(255,140,66,0.25); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+.premium-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--flame2); }
+.premium-card-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.6; }
+
+/* ACTIVE PREMIUM CARD */
+.premium-active-card {
+  background: linear-gradient(135deg, rgba(255,140,66,0.12), rgba(255,209,102,0.08));
+  border: 1px solid rgba(255,209,102,0.4);
+  border-radius: 20px; padding: 24px; margin-bottom: 20px;
+  text-align: center;
+}
+
+/* DANGER ZONE */
+.danger-card { background: rgba(255,77,77,0.04); border: 1px solid rgba(255,77,77,0.15); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+.danger-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #ff6b6b; }
+.danger-text { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+
+/* INTERESTS PICKER */
+.interests-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.int-chip { padding: 7px 14px; border-radius: 50px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border2); cursor: pointer; background: var(--surface); color: var(--text-dim); transition: var(--tr); }
+.int-chip:hover { border-color: var(--flame); color: var(--flame); }
+.int-chip.sel { background: rgba(255,77,77,0.12); border-color: var(--flame); color: var(--flame); }
+
+/* PREMIUM FEATURES LIST */
+.prem-features { list-style: none; margin: 12px 0; }
+.prem-features li { padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+.prem-features li::before { content: '✓'; color: var(--flame2); font-weight: 700; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🔥</div>
+      <span class="sidebar-logo-text grad-text">CampusFlame</span>
+    </div>
+    <button class="nav-item" onclick="location.href='dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
+    <button class="nav-item" onclick="location.href='chats.html'"><span class="nav-icon">💬</span><span>Chats</span></button>
+    <button class="nav-item" onclick="location.href='love-doctor.html'"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
+    <button class="nav-item active"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <div class="sidebar-bottom">
+      <button class="nav-item danger" onclick="logout()"><span class="nav-icon">🚪</span><span>Log Out</span></button>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title grad-text">My Profile</span>
+      </div>
+      <span id="topbar-premium-badge"></span>
+    </div>
+
+    <div class="content-area">
+
+      <!-- PROFILE HERO -->
+      <div class="profile-hero" id="profile-hero">
+        <div class="profile-big-avatar" id="profile-big-avatar" onclick="document.getElementById('avatar-file-input').click()">😊</div>
+        <input type="file" id="avatar-file-input" accept="image/*" onchange="updateAvatar(this)">
+        <div class="profile-info">
+          <div class="profile-name" id="p-name">
+            Loading…
+            <!-- Premium badge injected here by JS -->
+          </div>
+          <div class="profile-meta">
+            <span id="p-age">—</span>
+            <span id="p-gender">—</span>
+            <span id="p-location">—</span>
+            <span id="p-university">—</span>
+          </div>
+          <div class="profile-bio" id="p-bio">—</div>
+          <div class="profile-interests" id="p-interests"></div>
+        </div>
+      </div>
+
+      <!-- PREMIUM CARD (shown to non-premium users) -->
+      <div class="premium-card" id="premium-card">
+        <div class="premium-card-title">⭐ Upgrade to Premium</div>
+        <div class="premium-card-sub">Unlock the full CampusFlame experience for just <strong style="color:var(--flame2)">UGX 2,000/week</strong>.</div>
+        <ul class="prem-features">
+          <li>🔝 Boosted visibility — appear at the top of discovery</li>
+          <li>⭐ Premium badge on your profile</li>
+          <li>💬 Unlimited messages per day</li>
+          <li>📷 Send unlimited photos</li>
+          <li>📹 Video calls with your matches</li>
+          <li>❤️ Priority Love Doctor responses</li>
+          <li>👀 See who viewed your profile</li>
+        </ul>
+        <button class="btn btn-flame pay-premium-btn" style="width:100%;margin-top:8px;font-size:15px;padding:14px" onclick="initiatePremiumPayment()">
+          💳 Pay UGX 2,000 — Upgrade Now
+        </button>
+        <div style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:10px">
+          Secure payment via Pesapal · MTN MoMo & Airtel Money accepted · Activates instantly
+        </div>
+      </div>
+
+      <!-- PROFILE DETAILS -->
+      <div class="section-card">
+        <div class="section-card-title">Profile Details</div>
+        <div class="field-row"><span class="field-label">Name</span><span class="field-value" id="d-name">—</span><button class="edit-btn" onclick="openEditModal('name')">Edit</button></div>
+        <div class="field-row"><span class="field-label">Bio</span><span class="field-value" id="d-bio" style="max-width:60%;text-align:right;color:var(--text-dim)">—</span><button class="edit-btn" onclick="openEditModal('bio')">Edit</button></div>
+        <div class="field-row"><span class="field-label">University</span><span class="field-value" id="d-university">—</span><button class="edit-btn" onclick="openEditModal('university')">Edit</button></div>
+        <div class="field-row"><span class="field-label">Location</span><span class="field-value" id="d-location">—</span><button class="edit-btn" onclick="openEditModal('location')">Edit</button></div>
+        <div class="field-row"><span class="field-label">Interests</span><button class="edit-btn" onclick="openEditModal('interests')">Edit</button></div>
+        <div class="field-row"><span class="field-label">Looking For</span><span class="field-value" id="d-looking">—</span><button class="edit-btn" onclick="openEditModal('looking_for')">Edit</button></div>
+        <div class="field-row"><span class="field-label">Relationship Type</span><span class="field-value" id="d-reltype">—</span><button class="edit-btn" onclick="openEditModal('relationship_type')">Edit</button></div>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="danger-card">
+        <div class="danger-title">⚠️ Danger Zone</div>
+        <div class="danger-text">Deleting your account is permanent and cannot be undone. All your messages, matches and profile data will be lost forever.</div>
+        <button class="btn btn-sm" style="background:#ff6b6b22;color:#ff6b6b;border:1px solid #ff6b6b44;border-radius:50px;padding:10px 20px;cursor:pointer;font-weight:700" onclick="event.stopPropagation();confirmDelete()">🗑 Delete My Account</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="edit-modal-title">Edit</div>
+    <div id="edit-modal-body"></div>
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-flame" style="flex:1" id="save-edit-btn" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-box">
+    <div class="modal-title" style="color:#ff6b6b">Delete Account ⚠️</div>
+    <div class="modal-text">Are you sure you want to permanently delete your CampusFlame account? This cannot be undone.</div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('delete-modal').classList.remove('open')">Cancel</button>
+      <button class="btn" style="flex:1;background:#ff6b6b;color:#fff" onclick="deleteAccount()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/pesapal.js"></script>
+<script>
+const INTERESTS_LIST = ['Music 🎵','Movies 🎬','Sports ⚽','Reading 📚','Gaming 🎮','Cooking 🍳','Travel ✈️','Art 🎨','Dancing 💃','Fashion 👗','Gym 💪','Photography 📷','Tech 💻','Nature 🌿','Food 🍕','Anime 🎌','Poetry ✍️','Business 💼'];
+let myProfile = null;
+let editField = null;
+let selectedInterests = [];
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const user = await requireAuth('login.html');
+  if (!user) return;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (!profile) return;
+  myProfile = profile;
+window.myProfile = profile;
+renderProfile();
+  checkPaymentReturn(); // checks if user just came back from Pesapal
+
+  if (isPremium(profile)) {
+    // Hide upgrade card, show premium active card
+    document.getElementById('premium-card').outerHTML = `
+      <div class="premium-active-card">
+        <div style="font-size:40px;margin-bottom:12px">⭐</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--flame2);margin-bottom:6px">Premium Member</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:4px">Your premium is active until:</div>
+        <div style="font-size:16px;font-weight:700;color:var(--flame3)">${new Date(profile.premium_until).toLocaleDateString('en-UG', { day:'numeric', month:'long', year:'numeric' })}</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:12px">Enjoying boosted visibility, unlimited chats, video calls and priority Love Doctor access.</div>
+      </div>`;
+  }
+});
+
+function renderProfile() {
+  const p = myProfile;
+  const userIsPremium = isPremium(p);
+
+  // Avatar
+  const av = document.getElementById('profile-big-avatar');
+  if (p.avatar_url) av.innerHTML = `<img src="${p.avatar_url}" alt="">`;
+  else av.textContent = p.name?.[0] || '😊';
+
+  // Premium styling on avatar and hero
+  if (userIsPremium) {
+    av.classList.add('is-premium');
+    document.getElementById('profile-hero').classList.add('is-premium');
+    // Premium badge in topbar
+    document.getElementById('topbar-premium-badge').innerHTML =
+      '<span class="premium-badge" style="font-size:12px">⭐ Premium</span>';
+  }
+
+  // Name with premium badge
+  const nameEl = document.getElementById('p-name');
+  nameEl.innerHTML = (p.name || '—') +
+    (userIsPremium ? '<span class="profile-premium-badge">⭐ PREMIUM</span>' : '');
+
+  setText('p-age', p.age ? `🎂 ${p.age} yrs` : '—');
+  setText('p-gender', p.gender ? `⚧ ${p.gender}` : '—');
+  setText('p-location', p.location ? `📍 ${p.location}` : '—');
+  setText('p-university', p.university ? `🏫 ${p.university}` : '—');
+  setText('p-bio', p.bio || 'No bio yet');
+
+  const interestsEl = document.getElementById('p-interests');
+  if (p.interests) {
+    interestsEl.innerHTML = p.interests.split(',').map(i => `<span class="interest-tag">${i.trim()}</span>`).join('');
+  }
+
+  setText('d-name', p.name || '—');
+  setText('d-bio', p.bio || '—');
+  setText('d-university', p.university || '—');
+  setText('d-location', p.location || '—');
+  setText('d-looking', p.looking_for || '—');
+  setText('d-reltype', (p.relationship_type || '—').replace('_', ' '));
+}
+
+function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+
+function openEditModal(field) {
+  editField = field;
+  const p = myProfile;
+  const titles = { name: 'Edit Name', bio: 'Edit Bio', university: 'Edit University', location: 'Edit Location', interests: 'Edit Interests', looking_for: 'Edit Preference', relationship_type: 'Edit Relationship Type' };
+  document.getElementById('edit-modal-title').textContent = titles[field] || 'Edit';
+  let body = '';
+  if (field === 'name') body = `<input class="form-input" id="edit-input" value="${p.name || ''}" placeholder="Your full name">`;
+  else if (field === 'bio') body = `<textarea class="form-input" id="edit-input" rows="4" style="resize:none">${p.bio || ''}</textarea>`;
+  else if (field === 'university') body = `<input class="form-input" id="edit-input" value="${p.university || ''}" placeholder="e.g. Makerere University">`;
+  else if (field === 'location') body = `<input class="form-input" id="edit-input" value="${p.location || ''}" placeholder="e.g. Kampala">`;
+  else if (field === 'looking_for') body = `<select class="form-input" id="edit-input"><option value="male" ${p.looking_for==='male'?'selected':''}>Men</option><option value="female" ${p.looking_for==='female'?'selected':''}>Women</option><option value="trans" ${p.looking_for==='trans'?'selected':''}>Trans</option><option value="everyone" ${p.looking_for==='everyone'?'selected':''}>Everyone</option></select>`;
+  else if (field === 'relationship_type') body = `<select class="form-input" id="edit-input"><option value="long_term">Long Term</option><option value="short_term">Short Term</option><option value="hookup">Hookup</option><option value="one_night">One Night Stand</option><option value="fwb">Friends w/ Benefits</option><option value="friends">Just Friends</option><option value="online">Online Friend</option></select>`;
+  else if (field === 'interests') {
+    selectedInterests = p.interests ? p.interests.split(',').map(i => i.trim()) : [];
+    body = `<div class="interests-picker" id="int-picker">${INTERESTS_LIST.map(i => `<div class="int-chip ${selectedInterests.includes(i) ? 'sel' : ''}" onclick="toggleInterest(this,'${i}')">${i}</div>`).join('')}</div>`;
+  }
+  document.getElementById('edit-modal-body').innerHTML = body;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function toggleInterest(el, val) {
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) selectedInterests.push(val);
+  else selectedInterests = selectedInterests.filter(i => i !== val);
+}
+
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+async function saveEdit() {
+  setLoading('save-edit-btn', true, 'Save');
+  let update = {};
+  if (editField === 'interests') update.interests = selectedInterests.join(', ');
+  else { const input = document.getElementById('edit-input'); update[editField] = input?.value?.trim() || null; }
+  await sb.from('profiles').update(update).eq('id', myProfile.id);
+  Object.assign(myProfile, update);
+  setLoading('save-edit-btn', false, 'Save');
+  closeEditModal(); renderProfile();
+  showToast('Profile updated! ✅', 'success');
+}
+
+async function updateAvatar(input) {
+  const file = input.files[0]; if (!file) return;
+  showToast('Uploading photo…');
+  try {
+    const url = await uploadFile('avatars', `users/${myProfile.id}/avatar_${Date.now()}`, file);
+    await sb.from('profiles').update({ avatar_url: url }).eq('id', myProfile.id);
+    myProfile.avatar_url = url;
+    renderProfile(); showToast('Photo updated! ✅', 'success');
+  } catch(e) { showToast('Upload failed', 'error'); }
+}
+
+function confirmDelete() { document.getElementById('delete-modal').classList.add('open'); }
+
+async function deleteAccount() {
+  setLoading('save-edit-btn', true, 'Deleting…');
+  await sb.from('profiles').delete().eq('id', myProfile.id);
+  await sb.auth.signOut();
+  window.location.href = '/index.html';
+}
+// ADD THIS BLOCK before the logout line:
+function checkPaymentReturn() {
+  // placeholder — no pesapal integration yet
+}
+
+async function logout() { await sb.auth.signOut(); window.location.href = '/index.html'; }
+</script>
+</body>
+</html>

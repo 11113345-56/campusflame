@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Sign Up</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+body { min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 24px; position: relative; overflow-y: auto; }
+.bg-glow { position: fixed; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(255,77,77,0.12) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(255,140,66,0.08) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+.auth-wrap { width: 100%; max-width: 480px; position: relative; z-index: 1; padding: 24px 0; }
+.auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+.auth-logo-icon { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.auth-logo-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+.auth-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 28px; padding: 36px; box-shadow: var(--shadow); animation: fadeUp 0.5s ease both; }
+.auth-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+.auth-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-dim); }
+.auth-switch a { color: var(--flame); font-weight: 700; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 14px; margin-bottom: 24px; transition: color 0.2s; }
+.back-link:hover { color: var(--text); }
+@media (max-width: 520px) { body { padding: 16px; } .auth-card { padding: 24px 20px; } .auth-title { font-size: 22px; } }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="auth-wrap">
+  <a href="../index.html" class="back-link">← Back to home</a>
+  <div class="auth-logo">
+    <div class="auth-logo-icon">🔥</div>
+    <span class="auth-logo-text grad-text">CampusFlame</span>
+  </div>
+  <div class="auth-card">
+    <div class="auth-title">Create Account 🔥</div>
+    <div class="auth-sub">Join thousands of campus students finding love and friendship.</div>
+    <div id="su-error" class="error-msg"></div>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" id="su-name" type="text" placeholder="e.g. Jerry Okello">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <div class="input-prefix">
+        <span class="prefix-label">+256</span>
+        <input type="tel" id="su-phone" placeholder="700 000 000" maxlength="9">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Age</label>
+      <input class="form-input" id="su-age" type="number" placeholder="e.g. 21" min="18" max="35">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Gender</label>
+      <select class="form-input" id="su-gender">
+        <option value="">Select your gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="trans">Trans</option>
+        <option value="rather_not_say">Would Rather Not Say</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">University / Campus</label>
+      <input class="form-input" id="su-university" type="text" placeholder="e.g. Makerere University">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location / District</label>
+      <input class="form-input" id="su-location" type="text" placeholder="e.g. Kampala">
+    </div>
+    <div class="form-group">
+      <label class="form-label">PIN (4 digits)</label>
+      <input class="form-input" id="su-pin" type="password" placeholder="Create a 4-digit PIN" maxlength="4" inputmode="numeric">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm PIN</label>
+      <input class="form-input" id="su-pin2" type="password" placeholder="Repeat your PIN" maxlength="4" inputmode="numeric">
+    </div>
+    <button class="btn btn-flame" style="width:100%;margin-top:8px;font-size:16px;padding:16px" id="su-btn" onclick="handleSignup()">Create Account 🔥</button>
+    <div class="auth-switch">Already have an account? <a href="login.html">Log in</a></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>
+async function handleSignup() {
+  const name = document.getElementById('su-name').value.trim();
+  const rawPhone = document.getElementById('su-phone').value.trim();
+  const age = parseInt(document.getElementById('su-age').value);
+  const gender = document.getElementById('su-gender').value;
+  const university = document.getElementById('su-university').value.trim();
+  const location = document.getElementById('su-location').value.trim();
+  const pin = document.getElementById('su-pin').value;
+  const pin2 = document.getElementById('su-pin2').value;
+  if (!name || !rawPhone || !age || !gender || !university || !location || !pin) { showErr('su-error', 'Please fill in all fields'); return; }
+  if (age < 18) { showErr('su-error', 'You must be at least 18 to join'); return; }
+  if (pin.length !== 4 || !/^\d{4}$/.test(pin)) { showErr('su-error', 'PIN must be exactly 4 digits'); return; }
+  if (pin !== pin2) { showErr('su-error', 'PINs do not match'); return; }
+  if (!/^\d{9}$/.test(rawPhone.replace(/\s/g, ''))) { showErr('su-error', 'Enter a valid 9-digit phone number'); return; }
+  setLoading('su-btn', true, 'Create Account 🔥');
+  const phone = rawPhone.replace(/\s/g, '');
+  const email = phone + '@campusflame.ug';
+  const password = pin + phone.slice(-4);
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) { setLoading('su-btn', false, 'Create Account 🔥'); showErr('su-error', error.message); return; }
+  await sb.from('profiles').upsert({
+    id: data.user.id, name, phone, age, gender, university, location,
+    role: 'user', avatar_url: null, bio: null, interests: null,
+    looking_for: null, relationship_type: null, profile_complete: false,
+    premium_until: null, status: 'active', created_at: new Date().toISOString()
+  });
+  setLoading('su-btn', false, 'Create Account 🔥');
+  showToast('Account created! 🔥', 'success');
+  setTimeout(() => window.location.href = 'complete-profile.html', 1200);
+}
+</script>
+</body>
+</html>

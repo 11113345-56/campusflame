@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Log In</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; }
+.bg-glow { position: fixed; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(255,77,77,0.12) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(255,140,66,0.08) 0%, transparent 50%); pointer-events: none; }
+.auth-wrap { width: 100%; max-width: 440px; position: relative; z-index: 1; }
+.auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+.auth-logo-icon { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.auth-logo-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+.auth-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 28px; padding: 36px; box-shadow: var(--shadow); animation: fadeUp 0.5s ease both; }
+.auth-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+.auth-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-dim); }
+.auth-switch a { color: var(--flame); font-weight: 700; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 14px; margin-bottom: 24px; transition: color 0.2s; }
+.back-link:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="auth-wrap">
+  <a href="../index.html" class="back-link">← Back to home</a>
+  <div class="auth-logo">
+    <div class="auth-logo-icon">🔥</div>
+    <span class="auth-logo-text grad-text">CampusFlame</span>
+  </div>
+  <div class="auth-card">
+    <div class="auth-title">Welcome Back 🔥</div>
+    <div class="auth-sub">Log in to find your campus match.</div>
+    <div id="li-error" class="error-msg"></div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <div class="input-prefix">
+        <span class="prefix-label">+256</span>
+        <input type="tel" id="li-phone" placeholder="700 000 000" maxlength="9" onkeydown="if(event.key==='Enter')handleLogin()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PIN</label>
+      <input class="form-input" id="li-pin" type="password" placeholder="Enter your 4-digit PIN" maxlength="4" inputmode="numeric" onkeydown="if(event.key==='Enter')handleLogin()">
+    </div>
+    <button class="btn btn-flame" style="width:100%;font-size:16px;padding:16px" id="li-btn" onclick="handleLogin()">Log In 🔥</button>
+    <div class="auth-switch">Don't have an account? <a href="signup.html">Sign up free</a></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>
+async function handleLogin() {
+  const rawPhone = document.getElementById('li-phone').value.trim();
+  const pin = document.getElementById('li-pin').value;
+  if (!rawPhone || !pin) { showErr('li-error', 'Please fill in all fields'); return; }
+  setLoading('li-btn', true, 'Log In 🔥');
+  const phone = rawPhone.replace(/\s/g, '');
+  const email = phone + '@campusflame.ug';
+  const password = pin + phone.slice(-4);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  setLoading('li-btn', false, 'Log In 🔥');
+  if (error) { showErr('li-error', 'Invalid phone number or PIN'); return; }
+  const { data: profile } = await sb.from('profiles').select('role, profile_complete, status').eq('id', data.user.id).single();
+  if (!profile) { showErr('li-error', 'Account not found'); return; }
+  // Block admin accounts from logging into the user site
+  if (profile.role === 'admin') { showErr('li-error', 'Invalid phone number or PIN'); return; }
+  if (profile.status === 'banned') { showErr('li-error', 'Your account has been suspended. Contact support.'); await sb.auth.signOut(); return; }
+  if (!profile.profile_complete) { window.location.href = 'complete-profile.html'; return; }
+  window.location.href = 'dashboard.html';
+}
+</script>
+</body>
+</html>

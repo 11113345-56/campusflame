@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame 🔥 — Where Campus Love Ignites</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+body { overflow-x: hidden; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: var(--dark);
+}
+
+/* Animated gradient background */
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 40%, rgba(255,77,77,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 20%, rgba(255,140,66,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(255,209,102,0.08) 0%, transparent 45%);
+}
+
+/* Floating particles */
+.particle { position: absolute; border-radius: 50%; animation: floatParticle linear infinite; opacity: 0; }
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+}
+
+/* NAV */
+.nav {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 48px;
+}
+.nav-logo { display: flex; align-items: center; gap: 12px; }
+.nav-logo-icon { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.nav-logo-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+
+/* HERO CONTENT */
+.hero-content {
+  position: relative; z-index: 5;
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px;
+}
+
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.25);
+  color: var(--flame); padding: 8px 18px; border-radius: 50px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+  margin-bottom: 28px; animation: fadeUp 0.6s ease both;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(44px, 7vw, 88px);
+  font-weight: 900; line-height: 1.08;
+  margin-bottom: 24px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px); color: var(--text-dim);
+  max-width: 540px; line-height: 1.7; margin-bottom: 40px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-btns {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.hero-btns .btn { font-size: 16px; padding: 16px 36px; }
+
+.hero-stats {
+  display: flex; gap: 48px; margin-top: 64px;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.stat-item { text-align: center; }
+.stat-val { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; }
+.stat-lbl { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+
+/* FEATURES */
+.features { padding: 100px 48px; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; max-width: 1100px; margin: 0 auto; }
+.feature-card {
+  background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 24px; padding: 32px;
+  transition: var(--tr);
+}
+.feature-card:hover { border-color: rgba(255,77,77,0.3); transform: translateY(-6px); box-shadow: var(--glow); }
+.feature-icon { font-size: 36px; margin-bottom: 16px; }
+.feature-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.feature-text { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+
+/* HOW IT WORKS */
+.how { padding: 80px 48px; background: var(--dark2); }
+.steps { display: flex; gap: 32px; max-width: 900px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+.step { text-align: center; flex: 1; min-width: 180px; }
+.step-num { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #fff; margin: 0 auto 16px; }
+.step-title { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+.step-text { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+/* CTA SECTION */
+.cta-section { padding: 100px 48px; text-align: center; position: relative; overflow: hidden; }
+.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255,77,77,0.1) 0%, transparent 70%); }
+.cta-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 60px); font-weight: 900; margin-bottom: 20px; position: relative; }
+.cta-text { color: var(--text-dim); font-size: 17px; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.7; position: relative; }
+.cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+/* FOOTER */
+.footer { padding: 32px 48px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-text { color: var(--text-dim); font-size: 13px; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav { padding: 16px 20px; }
+  .features { padding: 60px 20px; }
+  .how { padding: 60px 20px; }
+  .cta-section { padding: 60px 20px; }
+  .hero-stats { gap: 28px; }
+  .footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="hero-bg"></div>
+<div id="particles"></div>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">🔥</div>
+      <span class="nav-logo-text grad-text">CampusFlame</span>
+    </div>
+    <div class="nav-actions">
+      <a href="pages/login.html" class="btn btn-outline btn-sm">Log In</a>
+      <a href="pages/signup.html" class="btn btn-flame btn-sm">Sign Up Free</a>
+    </div>
+  </nav>
+
+  <!-- HERO CONTENT -->
+  <div class="hero-content">
+    <div class="hero-label">🔥 Uganda's #1 Campus Dating Platform</div>
+    <h1 class="hero-title">
+      Where Campus<br>
+      <span class="grad-text">Love Ignites</span>
+    </h1>
+    <p class="hero-sub">Connect with fellow campus students looking for love, friendship, and meaningful relationships. Real people, real connections.</p>
+    <div class="hero-btns">
+      <a href="pages/signup.html" class="btn btn-flame">🔥 Get Started — It's Free</a>
+      <a href="pages/login.html" class="btn btn-outline">Already have an account?</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-val grad-text">500+</div><div class="stat-lbl">Campus Students</div></div>
+      <div class="stat-item"><div class="stat-val grad-text">12+</div><div class="stat-lbl">Universities</div></div>
+      <div class="stat-item"><div class="stat-val grad-text">100%</div><div class="stat-lbl">Free to Start</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features">
+  <h2 style="text-align:center;font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:48px">Why <span class="grad-text">CampusFlame?</span></h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">Free Messaging</div>
+      <div class="feature-text">Chat freely with 20 messages per day per match. Send text and photos. Upgrade to premium for unlimited chats.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">Smart Matching</div>
+      <div class="feature-text">See profiles based on your gender preference and relationship goals. Find exactly what you are looking for.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📹</div>
+      <div class="feature-title">Video Calls</div>
+      <div class="feature-text">Take it to the next level with video calls. See your match face to face before meeting in person.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">❤️</div>
+      <div class="feature-title">Love Doctor</div>
+      <div class="feature-text">Struggling with relationship issues? Chat with our Love Doctor for professional relationship advice and guidance.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Safe & Secure</div>
+      <div class="feature-text">Our content moderation system keeps the platform clean and safe. Your privacy is our top priority.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏫</div>
+      <div class="feature-title">Campus Only</div>
+      <div class="feature-text">Exclusively for university and campus students across Uganda. Connect with people who understand your world.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <h2 style="text-align:center;font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:48px">How It <span class="grad-text">Works</span></h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-title">Sign Up Free</div><div class="step-text">Create your account in under 2 minutes. Just your phone, name, age and a PIN.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-num" style="display:none"></div><div class="step-title">Complete Profile</div><div class="step-text">Add your photo, interests, and what kind of relationship you are looking for.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-title">Browse Matches</div><div class="step-text">See a curated list of campus students who match your preferences.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-title">Start Chatting</div><div class="step-text">Send messages, photos and start building a real connection today.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Ready to Find Your <span class="grad-text">Campus Flame?</span></h2>
+  <p class="cta-text">Join hundreds of campus students already finding love and friendship on CampusFlame. It is completely free to get started.</p>
+  <div class="cta-btns">
+    <a href="pages/signup.html" class="btn btn-flame" style="font-size:17px;padding:18px 44px">🔥 Create Free Account</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="nav-logo">
+    <div class="nav-logo-icon" style="width:32px;height:32px;font-size:16px;border-radius:10px">🔥</div>
+    <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">CampusFlame</span>
+  </div>
+  <div class="footer-text">© 2025 CampusFlame · Where Campus Love Ignites 🔥</div>
+  <div class="footer-text">Made for Uganda Campus Students</div>
+</footer>
+
+<script>
+// Create floating particles
+const container = document.getElementById('particles');
+const colors = ['#FF4D4D', '#FF8C42', '#FFD166', '#ff6b6b'];
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 6 + 2;
+  p.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${Math.random() * 100}%;
+    background: ${colors[Math.floor(Math.random() * colors.length)]};
+    animation-duration: ${Math.random() * 15 + 10}s;
+    animation-delay: ${Math.random() * 10}s;
+    position: fixed; z-index: 1; pointer-events: none;
+  `;
+  document.body.appendChild(p);
+}
+</script>
+</body>
+</html>

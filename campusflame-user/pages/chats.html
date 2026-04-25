@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Chats</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+.chats-layout { display: flex; height: calc(100vh - 69px); overflow: hidden; }
+/* CONVERSATIONS LIST */
+.convs-panel { width: 320px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.convs-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.convs-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+.convs-list { flex: 1; overflow-y: auto; }
+.conv-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; transition: var(--tr); border-bottom: 1px solid var(--border); }
+.conv-item:hover { background: var(--surface); }
+.conv-item.active { background: rgba(255,77,77,0.08); border-right: 3px solid var(--flame); }
+.conv-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; overflow: hidden; flex-shrink: 0; position: relative; }
+.conv-avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* Premium ring on conv avatar */
+.conv-avatar.premium-ring { box-shadow: 0 0 0 2px var(--flame3); }
+.conv-body { flex: 1; min-width: 0; }
+.conv-name { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.conv-preview { font-size: 12px; color: var(--text-dim); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-time { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+.unread-badge { width: 18px; height: 18px; background: var(--flame); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+/* CHAT PANEL */
+.chat-main { flex: 1; display: flex; flex-direction: column; }
+.chat-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: var(--dark2); }
+.chat-peer-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; overflow: hidden; flex-shrink: 0; }
+.chat-peer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.chat-peer-info .peer-name { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+.chat-peer-info .peer-status { font-size: 12px; color: #4ade80; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.msg-row { display: flex; }
+.msg-row.mine { justify-content: flex-end; }
+.msg-time { font-size: 10px; color: var(--text-dim); margin-top: 4px; text-align: right; }
+
+/* INPUT ROW */
+.chat-input-row { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; background: var(--dark2); position: sticky; bottom: 0; z-index: 10; }
+.chat-input { flex: 1; padding: 12px 18px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; color: var(--text); font-size: 14px; outline: none; transition: var(--tr); }
+.chat-input:focus { border-color: var(--flame); }
+.chat-input::placeholder { color: var(--text-dim); }
+.btn-attach { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: var(--tr); }
+.btn-attach:hover { border-color: var(--flame2); background: rgba(255,140,66,0.1); }
+.btn-attach.locked { opacity: 0.4; cursor: not-allowed; }
+.btn-send { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--flame), var(--flame2)); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: var(--tr); }
+.btn-send:hover { box-shadow: 0 6px 20px rgba(255,77,77,0.4); transform: scale(1.05); }
+
+/* LIMIT BAR */
+.limit-bar { padding: 10px 20px; background: rgba(255,77,77,0.08); border-top: 1px solid rgba(255,77,77,0.15); text-align: center; font-size: 12px; color: var(--flame); display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.limit-bar a { color: var(--flame2); font-weight: 700; cursor: pointer; text-decoration: underline; }
+.limit-bar.warning { background: rgba(255,140,66,0.1); border-color: rgba(255,140,66,0.2); color: var(--flame2); }
+.limit-bar.blocked { background: rgba(255,77,77,0.12); }
+
+/* NO CHAT SELECTED */
+.no-chat { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); }
+.no-chat-icon { font-size: 64px; margin-bottom: 16px; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .convs-panel { width: 100%; display: none; }
+  .convs-panel.show { display: flex; }
+  .chat-main { display: none; }
+  .chat-main.show { display: flex; }
+  .back-to-list { display: flex !important; }
+}
+.back-to-list { display: none; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; padding: 4px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🔥</div>
+      <span class="sidebar-logo-text grad-text">CampusFlame</span>
+    </div>
+    <button class="nav-item" onclick="location.href='dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
+    <button class="nav-item active"><span class="nav-icon">💬</span><span>Chats</span></button>
+    <button class="nav-item" onclick="location.href='love-doctor.html'"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
+    <button class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <div class="sidebar-bottom">
+      <button class="nav-item danger" onclick="logout()"><span class="nav-icon">🚪</span><span>Log Out</span></button>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-content" style="overflow:hidden">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title grad-text">Chats 💬</span>
+      </div>
+      <div id="msg-limit-info" style="font-size:13px;color:var(--text-dim)"></div>
+    </div>
+
+    <div class="chats-layout">
+      <!-- CONVERSATIONS -->
+      <div class="convs-panel show" id="convs-panel">
+        <div class="convs-header">
+          <div class="convs-title">Messages</div>
+          <div id="people-limit-info" style="font-size:12px;color:var(--text-dim);margin-top:4px"></div>
+        </div>
+        <div class="convs-list" id="convs-list">
+          <div class="empty-state" style="padding:40px 20px"><div class="empty-icon" style="font-size:40px">💬</div><div class="empty-title" style="font-size:16px">No chats yet</div><p style="font-size:13px">Go to Discover and start chatting!</p></div>
+        </div>
+      </div>
+
+      <!-- CHAT MAIN -->
+      <div class="chat-main" id="chat-main">
+        <div class="no-chat" id="no-chat-placeholder">
+          <div class="no-chat-icon">💬</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px">Select a chat</div>
+          <div style="font-size:14px">Choose a conversation to start messaging</div>
+        </div>
+
+        <!-- Active chat view -->
+        <div id="active-chat" style="display:none;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="chat-header">
+            <button class="back-to-list" id="back-btn" onclick="backToList()">←</button>
+            <div class="chat-peer-avatar" id="chat-peer-avatar">?</div>
+            <div class="chat-peer-info">
+              <div class="peer-name" id="chat-peer-name">—</div>
+              <div class="peer-status">Online</div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div id="limit-bar-wrap"></div>
+          <div class="chat-input-row">
+            <button class="btn-attach" id="attach-btn" onclick="handleAttachClick()" title="Send image">📎</button>
+           <input type="file" id="img-file" accept="image/*" onchange="sendImage(this)" style="display:none">
+            <input class="chat-input" id="chat-input" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMessage()">
+            <button class="btn-send" onclick="sendMessage()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premium-modal">
+  <div class="modal-box" style="border:1px solid rgba(255,209,102,0.3)">
+    <div class="modal-title">🔥 Upgrade to Premium</div>
+    <div class="modal-text" id="premium-modal-text">Upgrade to unlock this feature!</div>
+    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--flame3);margin-bottom:12px">UGX 2,000<span style="font-size:14px;color:var(--text-dim);font-family:'Plus Jakarta Sans'">/week</span></div>
+    <div style="background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.2);border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:var(--text-dim)">
+      📱 Send <strong style="color:var(--flame3)">UGX 2,000</strong> via MTN MoMo or Airtel Money to <strong style="color:var(--text)">0700 000 000</strong>.<br>
+      Use your phone number as reference. Premium activates within 1 hour.
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closePremiumModal()">Maybe Later</button>
+      <button class="btn btn-flame" style="flex:1" onclick="closePremiumModal();showToast('Payment sent! We will activate premium within 1 hour 🔥','success')">I've Paid ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>
+let myProfile = null;
+let currentPeer = null;
+let currentPeerProfile = null;
+let currentConvId = null;
+let chatSub = null;
+let msgCount = 0;
+let imgCount = 0;
+
+// ── LIMITS ───────────────────────────────
+const FREE_MSG_LIMIT = 30;
+const FREE_IMG_LIMIT = 2;
+const FREE_PEOPLE_LIMIT = 5;
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const user = await requireAuth('login.html');
+  if (!user) return;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (!profile) return;
+  myProfile = profile;
+  loadConversations();
+
+  const stored = localStorage.getItem('cf_chat_peer');
+  if (stored) {
+    localStorage.removeItem('cf_chat_peer');
+    const peer = JSON.parse(stored);
+    openChatWithPeer(peer.id, peer.name, null);
+  }
+});
+
+async function loadConversations() {
+  const { data: convs } = await sb.from('conversations')
+    .select('*')
+    .or(`user1_id.eq.${myProfile.id},user2_id.eq.${myProfile.id}`)
+    .order('updated_at', { ascending: false });
+
+  // Show people limit info for free users
+  if (!isPremium(myProfile)) {
+    const count = convs?.length || 0;
+    const remaining = FREE_PEOPLE_LIMIT - count;
+    const info = document.getElementById('people-limit-info');
+    if (info) {
+      info.innerHTML = remaining > 0
+        ? `👥 ${count}/${FREE_PEOPLE_LIMIT} people · <a style="color:var(--flame);cursor:pointer" onclick="showPremiumModal('people')">Upgrade for unlimited</a>`
+        : `🔒 Max 5 people reached · <a style="color:var(--flame);cursor:pointer" onclick="showPremiumModal('people')">Upgrade</a>`;
+    }
+  }
+
+  const list = document.getElementById('convs-list');
+  if (!convs?.length) {
+    list.innerHTML = `<div class="empty-state" style="padding:40px 20px"><div class="empty-icon" style="font-size:40px">💬</div><div class="empty-title" style="font-size:16px">No chats yet</div><p style="font-size:13px">Go to Discover and start chatting!</p></div>`;
+    return;
+  }
+
+  const peerIds = convs.map(c => c.user1_id === myProfile.id ? c.user2_id : c.user1_id);
+  const { data: peers } = await sb.from('profiles').select('id,name,avatar_url,premium_until').in('id', peerIds);
+
+  list.innerHTML = convs.map(c => {
+    const peerId = c.user1_id === myProfile.id ? c.user2_id : c.user1_id;
+    const peer = peers?.find(p => p.id === peerId) || {};
+    const peerPremium = peer.premium_until && new Date(peer.premium_until) > new Date();
+    return `<div class="conv-item" id="conv-${c.id}" onclick="openChat('${c.id}','${peerId}','${peer.name || 'User'}','${peer.avatar_url || ''}')">
+      <div class="conv-avatar ${peerPremium ? 'premium-ring' : ''}">
+        ${peer.avatar_url ? `<img src="${peer.avatar_url}" alt="">` : (peer.name?.[0] || '?')}
+      </div>
+      <div class="conv-body">
+        <div class="conv-name">
+          ${peer.name || 'User'}
+          ${peerPremium ? '<span style="font-size:11px">⭐</span>' : ''}
+        </div>
+        <div class="conv-preview">${c.last_message || 'Say hi! 👋'}</div>
+      </div>
+      <span class="conv-time">${fmtDate(c.updated_at)}</span>
+    </div>`;
+  }).join('');
+}
+
+async function openChatWithPeer(peerId, peerName, peerAvatar) {
+  let { data: conv } = await sb.from('conversations').select('*')
+    .or(`and(user1_id.eq.${myProfile.id},user2_id.eq.${peerId}),and(user1_id.eq.${peerId},user2_id.eq.${myProfile.id})`)
+    .single();
+  if (!conv) {
+    const { data: newConv } = await sb.from('conversations').insert({
+      user1_id: myProfile.id, user2_id: peerId,
+      created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+    }).select().single();
+    conv = newConv;
+  }
+  if (conv) openChat(conv.id, peerId, peerName, peerAvatar);
+}
+
+async function openChat(convId, peerId, peerName, peerAvatar) {
+  if (currentConvId === convId) return;  // ADD THIS — stops re-opening same chat
+  currentConvId = convId;
+  currentPeer = { id: peerId, name: peerName, avatar: peerAvatar };
+
+  // Load peer profile to show premium badge in header
+  const { data: peerProf } = await sb.from('profiles').select('premium_until').eq('id', peerId).single();
+  currentPeerProfile = peerProf;
+  const peerIsPremium = peerProf?.premium_until && new Date(peerProf.premium_until) > new Date();
+
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  const convEl = document.getElementById('conv-' + convId);
+  if (convEl) convEl.classList.add('active');
+
+  document.getElementById('no-chat-placeholder').style.display = 'none';
+  const ac = document.getElementById('active-chat'); ac.style.display = 'flex';
+
+  const av = document.getElementById('chat-peer-avatar');
+  av.innerHTML = peerAvatar ? `<img src="${peerAvatar}" alt="">` : (peerName?.[0] || '?');
+
+  // Show premium badge next to name in header
+  document.getElementById('chat-peer-name').innerHTML =
+    (peerName || 'User') + (peerIsPremium ? ' <span style="font-size:13px">⭐</span>' : '');
+
+  document.getElementById('convs-panel').classList.remove('show');
+  document.getElementById('chat-main').classList.add('show');
+
+  if (chatSub) { sb.removeChannel(chatSub); chatSub = null; }
+  await loadMessages();
+  await updateLimitBar();
+
+  chatSub = sb.channel('chat-' + convId)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${convId}` }, () => loadMessages())
+    .subscribe();
+}
+
+async function loadMessages() {
+  const { data: msgs } = await sb.from('messages').select('*').eq('conversation_id', currentConvId).order('created_at', { ascending: true });
+  const box = document.getElementById('chat-messages');
+  if (!msgs?.length) {
+    box.innerHTML = `<div style="text-align:center;color:var(--text-dim);font-size:14px;padding:40px 20px">No messages yet. Say hi! 👋</div>`;
+    return;
+  }
+  box.innerHTML = msgs.map(m => {
+    const isMine = m.sender_id === myProfile.id;
+    const content = m.type === 'image'
+      ? `<div class="bubble ${isMine ? 'mine' : 'theirs'}"><img src="${m.content}" style="max-width:200px;border-radius:12px;display:block;"></div>`
+      : `<div class="bubble ${isMine ? 'mine' : 'theirs'}">${m.content}</div>`;
+    return `<div class="msg-row ${isMine ? 'mine' : ''}">
+      <div>${content}<div class="msg-time">${fmtDate(m.created_at)}</div></div>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function updateLimitBar() {
+  const wrap = document.getElementById('limit-bar-wrap');
+  const attachBtn = document.getElementById('attach-btn');
+
+  if (isPremium(myProfile)) {
+    wrap.innerHTML = '';
+    attachBtn.classList.remove('locked');
+    return;
+  }
+
+  // Count today's texts and images
+  const today = new Date().toISOString().split('T')[0];
+  const { data: todayMsgs } = await sb.from('messages')
+    .select('type')
+    .eq('conversation_id', currentConvId)
+    .eq('sender_id', myProfile.id)
+    .gte('created_at', today + 'T00:00:00');
+
+  const texts = todayMsgs?.filter(m => m.type === 'text').length || 0;
+  const images = todayMsgs?.filter(m => m.type === 'image').length || 0;
+  msgCount = texts;
+  imgCount = images;
+
+  const textRemaining = FREE_MSG_LIMIT - texts;
+  const imgRemaining = FREE_IMG_LIMIT - images;
+
+  // Lock attach button if image limit reached
+  if (imgRemaining <= 0) {
+    attachBtn.classList.add('locked');
+    attachBtn.title = 'Image limit reached — upgrade to premium';
+  } else {
+    attachBtn.classList.remove('locked');
+    attachBtn.title = `${imgRemaining} image${imgRemaining !== 1 ? 's' : ''} remaining today`;
+  }
+
+  // Show limit bar when getting close
+  if (textRemaining <= 5 || imgRemaining <= 1) {
+    const parts = [];
+    if (textRemaining <= 0) parts.push('🔒 Text limit reached');
+    else if (textRemaining <= 5) parts.push(`⚡ ${textRemaining} texts left today`);
+    if (imgRemaining <= 0) parts.push('🔒 Image limit reached');
+    else if (imgRemaining <= 1) parts.push(`📷 ${imgRemaining} image left today`);
+
+    wrap.innerHTML = `<div class="limit-bar ${textRemaining <= 0 || imgRemaining <= 0 ? 'blocked' : 'warning'}">
+      ${parts.join(' · ')} · <a onclick="showPremiumModal('messages')">Upgrade →</a>
+    </div>`;
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const content = input.value.trim();
+  if (!content || !currentConvId) return;
+
+  if (!isPremium(myProfile)) {
+    if (msgCount >= FREE_MSG_LIMIT) { showPremiumModal('messages'); return; }
+  }
+
+  input.value = '';
+  const flagged = containsFlaggedContent(content);
+
+  const { data: msg } = await sb.from('messages').insert({
+    conversation_id: currentConvId,
+    sender_id: myProfile.id,
+    receiver_id: currentPeer.id,
+    content, type: 'text',
+    flagged,
+    created_at: new Date().toISOString()
+  }).select().single();
+
+  if (flagged && msg) { await flagMessage(msg.id, 'keyword', content); }
+
+  await sb.from('conversations').update({ last_message: content, updated_at: new Date().toISOString() }).eq('id', currentConvId);
+  msgCount++;
+  updateLimitBar();
+}
+
+function handleAttachClick() {
+  if (!isPremium(myProfile) && imgCount >= FREE_IMG_LIMIT) {
+    showPremiumModal('images');
+    return;
+  }
+  document.getElementById('img-file').click();
+}
+
+async function sendImage(input) {
+  const file = input.files[0]; if (!file || !currentConvId) return;
+
+  if (!isPremium(myProfile) && imgCount >= FREE_IMG_LIMIT) {
+    showPremiumModal('images');
+    input.value = '';
+    return;
+  }
+
+  showToast('Uploading image…');
+  try {
+    const url = await uploadFile('chat-images', `${currentConvId}/${Date.now()}`, file);
+    const { data: msg } = await sb.from('messages').insert({
+      conversation_id: currentConvId, sender_id: myProfile.id, receiver_id: currentPeer.id,
+      content: url, type: 'image', flagged: false,
+      created_at: new Date().toISOString()
+    }).select().single();
+    await sb.from('conversations').update({ last_message: '📷 Image', updated_at: new Date().toISOString() }).eq('id', currentConvId);
+    imgCount++;
+    showToast('Image sent!', 'success');
+    updateLimitBar();
+  } catch(e) { showToast('Failed to send image', 'error'); }
+  input.value = '';
+}
+
+function showPremiumModal(reason) {
+  const texts = {
+    messages: 'You have reached your daily limit of 20 messages. Upgrade to premium for unlimited messaging!',
+    images: `Free users can only send ${FREE_IMG_LIMIT} images per conversation per day. Upgrade to send unlimited photos!`,
+    people: `Free users can chat with a maximum of ${FREE_PEOPLE_LIMIT} people. Upgrade to chat with everyone!`,
+    video: 'Video calls are a premium feature. Upgrade to start video calling!'
+  };
+  document.getElementById('premium-modal-text').textContent = texts[reason] || 'Upgrade to unlock this feature!';
+  document.getElementById('premium-modal').classList.add('open');
+}
+
+function closePremiumModal() { document.getElementById('premium-modal').classList.remove('open'); }
+
+function backToList() {
+  document.getElementById('convs-panel').classList.add('show');
+  document.getElementById('chat-main').classList.remove('show');
+}
+
+async function logout() { await sb.auth.signOut(); window.location.href = '/index.html'; }
+</script>
+</body>
+</html>

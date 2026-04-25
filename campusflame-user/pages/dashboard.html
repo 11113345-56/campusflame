@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFlame — Discover</title>
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+.match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.match-card {
+  background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 24px; overflow: hidden; transition: var(--tr);
+  cursor: pointer; position: relative;
+}
+.match-card:hover { transform: translateY(-6px); border-color: rgba(255,77,77,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+
+/* PREMIUM CARD — golden glow border */
+.match-card.is-premium {
+  border-color: rgba(255,209,102,0.4);
+  box-shadow: 0 0 20px rgba(255,209,102,0.12);
+}
+.match-card.is-premium:hover {
+  border-color: rgba(255,209,102,0.7);
+  box-shadow: 0 20px 50px rgba(255,209,102,0.2);
+}
+
+.match-img {
+  width: 100%; height: 280px; object-fit: cover;
+  background: var(--surface); display: flex; align-items: center;
+  justify-content: center; font-size: 80px;
+}
+.match-img img { width: 100%; height: 100%; object-fit: cover; }
+.online-dot { position: absolute; top: 14px; left: 14px; width: 12px; height: 12px; background: #4ade80; border-radius: 50%; border: 2px solid var(--dark2); }
+
+/* PREMIUM BADGE on card */
+.card-premium-badge {
+  position: absolute; top: 14px; right: 14px;
+  background: linear-gradient(135deg, rgba(255,140,66,0.9), rgba(255,209,102,0.9));
+  color: #000; font-size: 10px; font-weight: 800;
+  padding: 4px 10px; border-radius: 20px;
+  letter-spacing: 0.05em; backdrop-filter: blur(4px);
+}
+
+.match-body { padding: 16px; }
+.match-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.match-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.match-meta span { font-size: 12px; color: var(--text-dim); }
+.match-interests { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.match-actions { display: flex; gap: 10px; }
+.btn-chat-match { flex: 1; padding: 10px; background: linear-gradient(135deg, var(--flame), var(--flame2)); color: #fff; border: none; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--tr); }
+.btn-chat-match:hover { box-shadow: 0 8px 24px rgba(255,77,77,0.4); }
+.btn-vid-match { width: 40px; height: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); font-size: 18px; }
+.btn-vid-match:hover { border-color: var(--flame2); background: rgba(255,140,66,0.1); }
+/* Video call locked for non-premium viewers */
+.btn-vid-match.locked { opacity: 0.4; cursor: not-allowed; }
+
+/* FILTER BAR */
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.filter-btn { padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border2); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: var(--tr); }
+.filter-btn:hover { border-color: var(--flame); color: var(--flame); }
+.filter-btn.active { background: rgba(255,77,77,0.1); border-color: var(--flame); color: var(--flame); }
+
+/* PREMIUM MODAL */
+.premium-modal { background: var(--dark3); border: 1px solid rgba(255,209,102,0.3); }
+.premium-price { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--flame3); }
+.premium-features { list-style: none; margin: 16px 0; }
+.premium-features li { padding: 8px 0; font-size: 14px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+.premium-features li::before { content: '✓'; color: var(--flame2); font-weight: 700; }
+
+/* SEARCH */
+.search-wrap { position: relative; max-width: 380px; margin-bottom: 20px; }
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 16px; }
+.search-input { width: 100%; padding: 12px 16px 12px 44px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; color: var(--text); font-size: 14px; outline: none; transition: var(--tr); }
+.search-input:focus { border-color: var(--flame); }
+.search-input::placeholder { color: var(--text-dim); }
+
+/* SECTION LABEL */
+.section-label { font-size: 12px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🔥</div>
+      <span class="sidebar-logo-text grad-text">CampusFlame</span>
+    </div>
+    <button class="nav-item active" onclick="location.href='dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
+    <button class="nav-item" onclick="location.href='chats.html'"><span class="nav-icon">💬</span><span>Chats</span></button>
+    <button class="nav-item" onclick="location.href='love-doctor.html'"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
+    <button class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <div class="sidebar-bottom">
+      <button class="nav-item danger" onclick="logout()"><span class="nav-icon">🚪</span><span>Log Out</span></button>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title grad-text">Discover 🔥</span>
+      </div>
+      <div class="user-chip">
+        <div id="my-avatar" class="avatar" style="width:38px;height:38px;background:linear-gradient(135deg,var(--flame),var(--flame2));font-size:16px">😊</div>
+        <span id="my-name" style="font-size:14px;font-weight:600">You</span>
+        <span id="premium-indicator"></span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search-input" placeholder="Search by name or university…" oninput="filterMatches()">
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterBy('all',this)">All</button>
+        <button class="filter-btn" onclick="filterBy('long_term',this)">💍 Long Term</button>
+        <button class="filter-btn" onclick="filterBy('hookup',this)">🔥 Hookup</button>
+        <button class="filter-btn" onclick="filterBy('friends',this)">🤝 Friends</button>
+        <button class="filter-btn" onclick="filterBy('fwb',this)">😉 FWB</button>
+        <button class="filter-btn" onclick="filterBy('online',this)">💻 Online</button>
+      </div>
+
+      <!-- Premium users shown first -->
+      <div id="premium-section" style="display:none">
+        <div class="section-label">⭐ Premium Members</div>
+        <div class="match-grid" id="premium-grid" style="margin-bottom:32px"></div>
+        <div class="section-label">Everyone</div>
+      </div>
+
+      <div class="section-title" id="main-section-title">People Near You</div>
+      <div class="match-grid" id="match-grid">
+        <div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">Loading matches…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premium-modal">
+  <div class="modal-box premium-modal">
+    <div class="modal-title">⭐ Upgrade to Premium</div>
+    <div class="modal-text" id="premium-modal-text">Unlock the full CampusFlame experience!</div>
+    <div class="premium-price">UGX 2,000 <span style="font-size:16px;color:var(--text-dim);font-family:'Plus Jakarta Sans'">/week</span></div>
+    <ul class="premium-features">
+      <li>🔝 Boosted visibility — appear at the top</li>
+      <li>⭐ Premium badge on your profile</li>
+      <li>💬 Unlimited messages per day</li>
+      <li>📷 Send unlimited photos</li>
+      <li>📹 Video calls with matches</li>
+      <li>❤️ Priority Love Doctor replies</li>
+      <li>👀 See who viewed your profile</li>
+    </ul>
+    <div class="modal-btns" style="flex-direction:column;gap:10px">
+      <button class="btn btn-flame pay-premium-btn" style="width:100%;padding:14px;font-size:15px" onclick="initiatePremiumPayment()">
+        💳 Pay UGX 2,000 — Upgrade Now
+      </button>
+      <div style="font-size:11px;color:var(--text-dim);text-align:center">
+        Secure payment · MTN MoMo & Airtel Money accepted · Activates instantly
+      </div>
+      <button class="btn btn-ghost" style="width:100%" onclick="closePremiumModal()">Maybe Later</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/pesapal.js"></script>
+<script>
+let myProfile = null;
+let allMatches = [];
+let premiumMatches = [];
+let regularMatches = [];
+let activeFilter = 'all';
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const user = await requireAuth('login.html');
+  if (!user) return;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (!profile || profile.role === 'admin') { window.location.href = 'login.html'; return; }
+  if (!profile.profile_complete) { window.location.href = 'complete-profile.html'; return; }
+  myProfile = profile;
+window.myProfile = profile;
+renderMyInfo();
+loadMatches();
+});
+
+function renderMyInfo() {
+  const p = myProfile;
+  const av = document.getElementById('my-avatar');
+  if (p.avatar_url) av.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  else av.textContent = p.name?.[0] || '😊';
+  document.getElementById('my-name').textContent = p.name?.split(' ')[0] || 'You';
+  if (isPremium(p)) {
+    document.getElementById('premium-indicator').innerHTML = '<span class="premium-badge">⭐ Premium</span>';
+  }
+}
+
+async function loadMatches() {
+  let query = sb.from('profiles').select('*')
+    .eq('profile_complete', true)
+    .neq('id', myProfile.id)
+    .neq('role', 'admin');
+
+  if (myProfile.looking_for && myProfile.looking_for !== 'everyone') {
+    query = query.eq('gender', myProfile.looking_for);
+  }
+
+  const { data: matches } = await query.limit(100);
+  if (!matches) return;
+
+  // Split into premium (boosted) and regular
+  const now = new Date();
+  premiumMatches = matches.filter(m => m.premium_until && new Date(m.premium_until) > now);
+  regularMatches = matches.filter(m => !m.premium_until || new Date(m.premium_until) <= now);
+
+  // Sort regular by newest
+  regularMatches.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  allMatches = [...premiumMatches, ...regularMatches];
+
+  renderAllMatches(premiumMatches, regularMatches);
+}
+
+function renderAllMatches(premium, regular) {
+  const premSection = document.getElementById('premium-section');
+  const premGrid = document.getElementById('premium-grid');
+  const mainGrid = document.getElementById('match-grid');
+  const mainTitle = document.getElementById('main-section-title');
+
+  if (premium.length > 0) {
+    premSection.style.display = '';
+    mainTitle.style.display = 'none';
+    premGrid.innerHTML = premium.map(m => buildMatchCard(m)).join('');
+  } else {
+    premSection.style.display = 'none';
+    mainTitle.style.display = '';
+  }
+
+  if (!regular.length && !premium.length) {
+    mainGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">No matches found</div><p>Check back soon — more people are joining!</p></div>`;
+    return;
+  }
+
+  mainGrid.innerHTML = regular.length
+    ? regular.map(m => buildMatchCard(m)).join('')
+    : `<div style="color:var(--text-dim);font-size:14px;padding:20px 0">No more matches to show.</div>`;
+}
+
+function buildMatchCard(m) {
+  const userIsPremium = isPremium(myProfile);
+  const matchIsPremium = m.premium_until && new Date(m.premium_until) > new Date();
+  const vidLocked = !userIsPremium;
+
+  return `
+    <div class="match-card ${matchIsPremium ? 'is-premium' : ''}">
+      ${Math.random() > 0.5 ? '<div class="online-dot"></div>' : ''}
+      ${matchIsPremium ? '<div class="card-premium-badge">⭐ PREMIUM</div>' : ''}
+      <div class="match-img">
+        ${m.avatar_url ? `<img src="${m.avatar_url}" alt="${m.name}">` : `<span>${getGenderEmoji(m.gender)}</span>`}
+      </div>
+      <div class="match-body">
+        <div class="match-name">
+          ${m.name || 'Anonymous'}
+          ${matchIsPremium ? '<span style="font-size:14px">⭐</span>' : ''}
+        </div>
+        <div class="match-meta">
+          <span>🎂 ${m.age || '?'}</span>
+          <span>📍 ${m.location || '—'}</span>
+          <span>🏫 ${(m.university || '—').split(' ').slice(0,2).join(' ')}</span>
+        </div>
+        <div class="match-interests">${m.interests ? '✨ ' + m.interests.split(',').slice(0,3).join(', ') : ''}</div>
+        <div class="match-actions">
+          <button class="btn-chat-match" onclick="startChat('${m.id}','${m.name}')">💬 Chat</button>
+          <button class="btn-vid-match ${vidLocked ? 'locked' : ''}"
+            onclick="${vidLocked ? "showPremiumModal('video')" : `startVideoCall('${m.id}','${m.name}')`}"
+            title="${vidLocked ? 'Premium only' : 'Video Call'}">
+            ${vidLocked ? '🔒' : '📹'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function getGenderEmoji(g) {
+  if (g === 'male') return '👨';
+  if (g === 'female') return '👩';
+  if (g === 'trans') return '🏳️‍⚧️';
+  return '😊';
+}
+
+function filterBy(type, btn) {
+  activeFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (type === 'all') {
+    renderAllMatches(premiumMatches, regularMatches);
+  } else {
+    const filtPremium = premiumMatches.filter(m => m.relationship_type === type);
+    const filtRegular = regularMatches.filter(m => m.relationship_type === type);
+    renderAllMatches(filtPremium, filtRegular);
+  }
+}
+
+function filterMatches() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtPremium = premiumMatches.filter(m =>
+    m.name?.toLowerCase().includes(q) || m.university?.toLowerCase().includes(q) || m.location?.toLowerCase().includes(q)
+  );
+  const filtRegular = regularMatches.filter(m =>
+    m.name?.toLowerCase().includes(q) || m.university?.toLowerCase().includes(q) || m.location?.toLowerCase().includes(q)
+  );
+  renderAllMatches(filtPremium, filtRegular);
+}
+
+async function startChat(peerId, peerName) {
+  if (!isPremium(myProfile)) {
+    // Only check daily message limit — NOT people limit
+    const count = await checkMessageLimit(myProfile.id, peerId);
+    if (count >= 20) { showPremiumModal('messages'); return; }
+  }
+  localStorage.setItem('cf_chat_peer', JSON.stringify({ id: peerId, name: peerName }));
+  window.location.href = 'chats.html';
+}
+
+function startVideoCall(peerId, peerName) {
+  if (!isPremium(myProfile)) { showPremiumModal('video'); return; }
+  showToast('📹 Video call feature coming soon!');
+}
+
+function showPremiumModal(reason) {
+  const texts = {
+    messages: 'You have reached your daily limit of 20 messages. Upgrade to premium for unlimited messaging!',
+    people: 'Free users can chat with a maximum of 5 people. Upgrade to premium to chat with everyone!',
+    video: 'Video calls are a premium feature. Upgrade to start video calling your matches!',
+    images: 'Free users can only send 2 images. Upgrade to premium to send unlimited photos!'
+  };
+  document.getElementById('premium-modal-text').textContent = texts[reason] || 'Upgrade to unlock this feature!';
+  document.getElementById('premium-modal').classList.add('open');
+}
+
+function closePremiumModal() {
+  document.getElementById('premium-modal').classList.remove('open');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+ window.location.href = '/index.html';
+}
+</script>
+</body>
+</html>
