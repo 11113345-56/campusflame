@@ -24,7 +24,7 @@ body { min-height: 100vh; display: flex; align-items: center; justify-content: c
 <body>
 <div class="bg-glow"></div>
 <div class="auth-wrap">
-  <a href="../index.html" class="back-link">← Back to home</a>
+  <a href="/" class="back-link">← Back to home</a>
   <div class="auth-logo">
     <div class="auth-logo-icon">🔥</div>
     <span class="auth-logo-text grad-text">CampusFlame</span>
@@ -69,8 +69,8 @@ async function handleLogin() {
   // Block admin accounts from logging into the user site
   if (profile.role === 'admin') { showErr('li-error', 'Invalid phone number or PIN'); return; }
   if (profile.status === 'banned') { showErr('li-error', 'Your account has been suspended. Contact support.'); await sb.auth.signOut(); return; }
-  if (!profile.profile_complete) { window.location.href = 'complete-profile.html'; return; }
-  window.location.href = 'dashboard.html';
+  if (!profile.profile_complete) { window.location.href = '/pages/complete-profile.html'; return; }
+  window.location.href = '/pages/dashboard.html';
 }
 </script>
 </body>

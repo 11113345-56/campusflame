@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (trackingId && merchantRef) {
     await fetch('https://vhuiukwundycdmksbnvi.supabase.co/functions/v1/pesapal-ipn?OrderTrackingId=' + trackingId + '&OrderMerchantReference=' + merchantRef);
   }
-  window.location.href = 'dashboard.html';
+  window.location.href = '/pages/dashboard.html';
 });
 </script>
 </body>

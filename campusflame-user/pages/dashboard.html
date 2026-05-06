@@ -13,34 +13,12 @@
   cursor: pointer; position: relative;
 }
 .match-card:hover { transform: translateY(-6px); border-color: rgba(255,77,77,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-
-/* PREMIUM CARD — golden glow border */
-.match-card.is-premium {
-  border-color: rgba(255,209,102,0.4);
-  box-shadow: 0 0 20px rgba(255,209,102,0.12);
-}
-.match-card.is-premium:hover {
-  border-color: rgba(255,209,102,0.7);
-  box-shadow: 0 20px 50px rgba(255,209,102,0.2);
-}
-
-.match-img {
-  width: 100%; height: 280px; object-fit: cover;
-  background: var(--surface); display: flex; align-items: center;
-  justify-content: center; font-size: 80px;
-}
+.match-card.is-premium { border-color: rgba(255,209,102,0.4); box-shadow: 0 0 20px rgba(255,209,102,0.12); }
+.match-card.is-premium:hover { border-color: rgba(255,209,102,0.7); box-shadow: 0 20px 50px rgba(255,209,102,0.2); }
+.match-img { width: 100%; height: 280px; object-fit: cover; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 80px; }
 .match-img img { width: 100%; height: 100%; object-fit: cover; }
 .online-dot { position: absolute; top: 14px; left: 14px; width: 12px; height: 12px; background: #4ade80; border-radius: 50%; border: 2px solid var(--dark2); }
-
-/* PREMIUM BADGE on card */
-.card-premium-badge {
-  position: absolute; top: 14px; right: 14px;
-  background: linear-gradient(135deg, rgba(255,140,66,0.9), rgba(255,209,102,0.9));
-  color: #000; font-size: 10px; font-weight: 800;
-  padding: 4px 10px; border-radius: 20px;
-  letter-spacing: 0.05em; backdrop-filter: blur(4px);
-}
-
+.card-premium-badge { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, rgba(255,140,66,0.9), rgba(255,209,102,0.9)); color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.05em; }
 .match-body { padding: 16px; }
 .match-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
 .match-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -52,103 +30,62 @@
 .btn-vid-match { width: 40px; height: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); font-size: 18px; }
 .btn-vid-match:hover { border-color: var(--flame2); background: rgba(255,140,66,0.1); }
 .btn-vid-match.locked { opacity: 0.4; cursor: not-allowed; }
-
-/* LIKE / DISLIKE BUTTONS */
-.btn-like {
-  width: 40px; height: 40px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: var(--tr); font-size: 18px;
-}
+.btn-like { width: 40px; height: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); font-size: 18px; }
 .btn-like:hover { border-color: #ff4d4d; background: rgba(255,77,77,0.1); transform: scale(1.1); }
 .btn-like.liked { background: rgba(255,77,77,0.15); border-color: var(--flame); }
-.btn-skip {
-  width: 40px; height: 40px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: var(--tr); font-size: 18px;
-}
+.btn-skip { width: 40px; height: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); font-size: 18px; }
 .btn-skip:hover { border-color: var(--text-dim); background: rgba(255,255,255,0.05); transform: scale(1.1); }
-
-/* FILTER BAR */
 .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
 .filter-btn { padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border2); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: var(--tr); }
 .filter-btn:hover { border-color: var(--flame); color: var(--flame); }
 .filter-btn.active { background: rgba(255,77,77,0.1); border-color: var(--flame); color: var(--flame); }
-
-/* PREMIUM MODAL */
 .premium-modal { background: var(--dark3); border: 1px solid rgba(255,209,102,0.3); }
 .premium-price { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--flame3); }
 .premium-features { list-style: none; margin: 16px 0; }
 .premium-features li { padding: 8px 0; font-size: 14px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
 .premium-features li::before { content: '✓'; color: var(--flame2); font-weight: 700; }
-
-/* SEARCH */
 .search-wrap { position: relative; max-width: 380px; margin-bottom: 20px; }
 .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 16px; }
 .search-input { width: 100%; padding: 12px 16px 12px 44px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; color: var(--text); font-size: 14px; outline: none; transition: var(--tr); }
 .search-input:focus { border-color: var(--flame); }
 .search-input::placeholder { color: var(--text-dim); }
-
-/* SECTION LABEL */
 .section-label { font-size: 12px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
 .modal-overlay.open { display: flex; }
-
-/* WHO LIKED ME SECTION */
+/* WHO LIKED ME */
 .liked-me-section { margin-bottom: 32px; }
 .liked-me-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
-.liked-me-card {
-  background: var(--dark2); border: 1px solid rgba(255,77,77,0.2);
-  border-radius: 18px; overflow: hidden; text-align: center;
-  padding-bottom: 14px; position: relative;
-}
-.liked-me-avatar {
-  width: 100%; height: 120px; background: var(--surface);
-  display: flex; align-items: center; justify-content: center; font-size: 48px;
-}
+.liked-me-card { background: var(--dark2); border: 1px solid rgba(255,77,77,0.2); border-radius: 18px; overflow: hidden; text-align: center; padding-bottom: 14px; }
+.liked-me-avatar { width: 100%; height: 120px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 48px; }
 .liked-me-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .liked-me-name { font-size: 13px; font-weight: 700; margin: 8px 8px 2px; }
 .liked-me-meta { font-size: 11px; color: var(--text-dim); margin: 0 8px 10px; }
-.btn-liked-chat {
-  margin: 0 12px; width: calc(100% - 24px);
-  padding: 7px; background: linear-gradient(135deg, var(--flame), var(--flame2));
-  color: #fff; border: none; border-radius: 50px;
-  font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--tr);
-}
+.btn-liked-chat { margin: 0 12px; width: calc(100% - 24px); padding: 7px; background: linear-gradient(135deg, var(--flame), var(--flame2)); color: #fff; border: none; border-radius: 50px; font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--tr); }
 .btn-liked-chat:hover { box-shadow: 0 6px 18px rgba(255,77,77,0.35); }
-
-/* BLURRED LOCKED CARDS for free users */
 .liked-me-card.locked-card { filter: blur(6px); pointer-events: none; user-select: none; }
-.liked-me-locked-overlay {
-  background: rgba(13,13,15,0.7); border: 1px solid rgba(255,209,102,0.25);
-  border-radius: 18px; padding: 24px 16px; text-align: center;
-  grid-column: 1 / -1;
-}
+.liked-me-locked-overlay { background: rgba(13,13,15,0.7); border: 1px solid rgba(255,209,102,0.25); border-radius: 18px; padding: 24px 16px; text-align: center; grid-column: 1 / -1; }
 .liked-me-locked-overlay .lock-icon { font-size: 32px; margin-bottom: 10px; }
 .liked-me-locked-overlay p { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.6; }
 </style>
 </head>
 <body>
 <div class="app-shell">
-  <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-icon">🔥</div>
       <span class="sidebar-logo-text grad-text">CampusFlame</span>
     </div>
-    <button class="nav-item active" onclick="location.href='dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
-    <button class="nav-item" onclick="location.href='chats.html'"><span class="nav-icon">💬</span><span>Chats</span></button>
-    <button class="nav-item" onclick="location.href='love-doctor.html'"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
-    <button class="nav-item" onclick="location.href='profile.html'"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <button class="nav-item active" onclick="location.href='/pages/dashboard.html'"><span class="nav-icon">🏠</span><span>Discover</span></button>
+    <button class="nav-item" onclick="location.href='/pages/chats.html'"><span class="nav-icon">💬</span><span>Chats</span></button>
+    <button class="nav-item" onclick="location.href='/pages/love-doctor.html'"><span class="nav-icon">❤️‍🩹</span><span>Love Doctor</span></button>
+    <button class="nav-item" onclick="location.href='/pages/profile.html'"><span class="nav-icon">👤</span><span>Profile</span></button>
     <div class="sidebar-bottom">
       <button class="nav-item danger" onclick="logout()"><span class="nav-icon">🚪</span><span>Log Out</span></button>
     </div>
   </nav>
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-  <!-- MAIN -->
   <div class="main-content">
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:14px">
@@ -176,7 +113,7 @@
         <button class="filter-btn" onclick="filterBy('online',this)">💻 Online</button>
       </div>
 
-      <!-- WHO LIKED ME — shown to all, blurred for free users -->
+      <!-- WHO LIKED ME -->
       <div class="liked-me-section" id="liked-me-section" style="display:none">
         <div class="section-label">❤️ People Who Liked You</div>
         <div class="liked-me-grid" id="liked-me-grid"></div>
@@ -235,18 +172,17 @@ let allMatches = [];
 let premiumMatches = [];
 let regularMatches = [];
 let activeFilter = 'all';
-let myLikes = new Set(); // tracks who the current user has already liked
+let myLikes = new Set();
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const user = await requireAuth('login.html');
+  const user = await requireAuth('/pages/login.html');
   if (!user) return;
   const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-  if (!profile || profile.role === 'admin') { window.location.href = 'login.html'; return; }
-  if (!profile.profile_complete) { window.location.href = 'complete-profile.html'; return; }
+  if (!profile || profile.role === 'admin') { window.location.href = '/pages/login.html'; return; }
+  if (!profile.profile_complete) { window.location.href = '/pages/complete-profile.html'; return; }
   myProfile = profile;
   window.myProfile = profile;
 
-  // ── ONLINE STATUS: update last_seen now and every 2 minutes ──
   updateLastSeen();
   setInterval(updateLastSeen, 2 * 60 * 1000);
 
@@ -267,13 +203,11 @@ function renderMyInfo() {
   }
 }
 
-// Load IDs this user has already liked so we can show the heart as active
 async function loadMyLikes() {
   const { data } = await sb.from('likes').select('liked_id').eq('liker_id', myProfile.id);
   if (data) data.forEach(r => myLikes.add(r.liked_id));
 }
 
-// Load people who liked the current user
 async function loadWhoLikedMe() {
   const { data: likers } = await sb
     .from('likes')
@@ -283,16 +217,12 @@ async function loadWhoLikedMe() {
   const section = document.getElementById('liked-me-section');
   const grid = document.getElementById('liked-me-grid');
 
-  if (!likers || likers.length === 0) {
-    section.style.display = 'none';
-    return;
-  }
+  if (!likers || likers.length === 0) { section.style.display = 'none'; return; }
 
   section.style.display = '';
   const userIsPremium = isPremium(myProfile);
 
   if (userIsPremium) {
-    // Premium: show real cards
     grid.innerHTML = likers.map(r => {
       const p = r.profiles;
       if (!p) return '';
@@ -307,14 +237,12 @@ async function loadWhoLikedMe() {
         </div>`;
     }).join('');
   } else {
-    // Free users: show blurred cards + lock overlay
     const blurred = likers.slice(0, 3).map(() => `
       <div class="liked-me-card locked-card">
         <div class="liked-me-avatar"><span>😊</span></div>
         <div class="liked-me-name">Someone</div>
         <div class="liked-me-meta">🎂 ?? · 🏫 ??</div>
       </div>`).join('');
-
     grid.innerHTML = blurred + `
       <div class="liked-me-locked-overlay">
         <div class="lock-icon">🔒</div>
@@ -342,7 +270,6 @@ async function loadMatches() {
   regularMatches = matches.filter(m => !m.premium_until || new Date(m.premium_until) <= now);
   regularMatches.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   allMatches = [...premiumMatches, ...regularMatches];
-
   renderAllMatches(premiumMatches, regularMatches);
 }
 
@@ -418,20 +345,16 @@ function getGenderEmoji(g) {
   return '😊';
 }
 
-// Like or unlike a profile
 async function toggleLike(profileId, profileName) {
   const btn = document.getElementById('like-btn-' + profileId);
   const alreadyLiked = myLikes.has(profileId);
-
   if (alreadyLiked) {
-    // Unlike
     await sb.from('likes').delete().eq('liker_id', myProfile.id).eq('liked_id', profileId);
     myLikes.delete(profileId);
     btn.textContent = '🤍';
     btn.classList.remove('liked');
     showToast('Removed like');
   } else {
-    // Like
     const { error } = await sb.from('likes').insert({
       liker_id: myProfile.id,
       liked_id: profileId,
@@ -446,7 +369,6 @@ async function toggleLike(profileId, profileName) {
   }
 }
 
-// Skip — hides the card without deleting anything
 function skipProfile(profileId) {
   const card = document.getElementById('card-' + profileId);
   if (card) {
@@ -461,7 +383,6 @@ function filterBy(type, btn) {
   activeFilter = type;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-
   if (type === 'all') {
     renderAllMatches(premiumMatches, regularMatches);
   } else {
@@ -488,7 +409,7 @@ async function startChat(peerId, peerName) {
     if (count >= 20) { showPremiumModal('messages'); return; }
   }
   localStorage.setItem('cf_chat_peer', JSON.stringify({ id: peerId, name: peerName }));
-  window.location.href = 'chats.html';
+  window.location.href = '/pages/chats.html';
 }
 
 function startVideoCall(peerId, peerName) {
@@ -514,7 +435,7 @@ function closePremiumModal() {
 
 async function logout() {
   await sb.auth.signOut();
-  window.location.href = '/index.html';
+  window.location.href = '/';
 }
 </script>
 </body>

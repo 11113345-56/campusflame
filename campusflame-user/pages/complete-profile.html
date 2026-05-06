@@ -218,7 +218,7 @@ function previewAvatarStep(input) {
 async function saveProfile() {
   setLoading('finish-btn', true, 'Saving…');
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
+  if (!session) { window.location.href = '/pages/login.html'; return; }
   const uid = session.user.id;
 
   let avatar_url = null;
@@ -237,7 +237,7 @@ async function saveProfile() {
 
   setLoading('finish-btn', false, 'Find My Matches 🔥');
   showToast('Profile saved! 🔥', 'success');
-  setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  setTimeout(() => window.location.href = '/pages/dashboard.html', 1200);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
